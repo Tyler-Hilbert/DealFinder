@@ -22,9 +22,6 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
-        //Toast t = Toast.makeText(this, "Derp", Toast.LENGTH_LONG);
-        //t.show();
-
         TextView listing = (TextView) findViewById(R.id.listing);
         AsyncTaskRunner task = new AsyncTaskRunner();
         try {
@@ -33,8 +30,6 @@ public class MainActivity extends ActionBarActivity {
             e.printStackTrace();
         };
 
-        //new DownloadImageTask((ImageView) findViewById(R.id.treeRiver)).execute("http://vignette1.wikia.nocookie.net/kirby/images/8/83/King_Dedede_for_SSB4.png/revision/latest?cb=20140110131154&path-prefix=en");
-        //new EbaySearch((TextView) findViewById(R.id.output)).execute("df");
         new AsyncTaskRunner().execute("");
     }
 
@@ -59,33 +54,6 @@ public class MainActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-
-
-    private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
-        ImageView bmImage;
-
-        public DownloadImageTask(ImageView bmImage) {
-            this.bmImage = bmImage;
-        }
-
-        protected Bitmap doInBackground(String... urls) {
-            String urldisplay = urls[0];
-            Bitmap mIcon11 = null;
-            try {
-                InputStream in = new java.net.URL(urldisplay).openStream();
-                mIcon11 = BitmapFactory.decodeStream(in);
-            } catch (Exception e) {
-                //Log.e("Error", e.getMessage());
-                e.printStackTrace();
-            }
-            return mIcon11;
-        }
-
-        protected void onPostExecute(Bitmap result) {
-            bmImage.setImageBitmap(result);
-        }
     }
 
 
