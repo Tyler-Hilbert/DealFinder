@@ -8,6 +8,8 @@ import android.widget.Toast;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -57,18 +59,18 @@ public class EbaySearch {
     }
 
     private ArrayList<EbayListing> processResponse(String response) throws Exception {
+        // Grab results
         XPath xpath = XPathFactory.newInstance().newXPath();
         InputStream is = new ByteArrayInputStream(response.getBytes("UTF-8"));
         DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = domFactory.newDocumentBuilder();
-
 
         Document doc = builder.parse(is);
         XPathExpression ackExpression = xpath.compile("//findItemsByKeywordsResponse/ack");
         XPathExpression itemExpression = xpath.compile("//findItemsByKeywordsResponse/searchResult/item");
 
         String ackToken = (String) ackExpression.evaluate(doc, XPathConstants.STRING);
-        //print("ACK from ebay API :: ", ackToken);
+
         if (!ackToken.equals("Success")) {
             throw new Exception(" service returned an error");
         }
@@ -76,6 +78,7 @@ public class EbaySearch {
         NodeList nodes = (NodeList) itemExpression.evaluate(doc, XPathConstants.NODESET);
         ArrayList<EbayListing> listings = new ArrayList<EbayListing>();
 
+        // Put results in ArrayList
         for (int i = 0; i < nodes.getLength(); i++) {
             Node node = nodes.item(i);
 
@@ -85,17 +88,17 @@ public class EbaySearch {
             String galleryUrl = (String) xpath.evaluate("galleryURL", node, XPathConstants.STRING);
             String currentPrice = (String) xpath.evaluate("sellingStatus/currentPrice", node, XPathConstants.STRING);
 
-            listings.add(new EbayListing(title, Double.parseDouble(currentPrice), itemUrl));
-
-
-
-            //results += results + currentPrice + itemId + title + galleryUrl;
-           // print("currentPrice", currentPrice);
-           // print("itemId", itemId);
-           // print("title", title);
-           // print("galleryUrl", galleryUrl);
-           // System.out.println();
+            listings.add(new EbayListing(title, Double.parseDouble(currentPrice), itemUrl, galleryUrl));
         }
+
+
+        // Sort Results
+        Collections.sort(listings, new Comparator<EbayListing>() {
+            @Override
+            public int compare(EbayListing l1, EbayListing l2) {
+                return (int)(l1.getPrice() - l2.getPrice());
+            }
+        });
 
         is.close();
         return listings;

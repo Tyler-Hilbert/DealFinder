@@ -4,11 +4,13 @@ public class EbayListing {
 	private String name;
 	private double price;
 	private String url;
+    private String picUrl;
 
-	public EbayListing(String n, double p, String u) {
+	public EbayListing(String n, double p, String u, String pu) {
 		name = n;
 		price = p;
 		url = u;
+        picUrl = pu;
 	}
 
 	public String getName() {
@@ -22,4 +24,8 @@ public class EbayListing {
 	public String getUrl() {
 		return url;
 	}
+
+    public String getPicUrl() {
+        return picUrl;
+    }
 }
