@@ -25,10 +25,14 @@ import org.w3c.dom.NodeList;
 public class EbaySearch {
     public final static String EBAY_APP_ID = "TylerHil-1764-448e-9aea-d0910ceebd1c";
     public final static String EBAY_FINDING_SERVICE_URI =
-            "http://svcs.ebay.com/services/search/FindingService/v1?OPERATION-NAME="
-            + "{operation}&SERVICE-VERSION={version}&SECURITY-APPNAME="
-            + "{applicationId}&GLOBAL-ID={globalId}&keywords={keywords}"
-            + "&paginationInput.entriesPerPage={maxresults}";
+            "http://svcs.ebay.com/services/search/FindingService/v1?"
+            + "OPERATION-NAME={operation}&SERVICE-VERSION={version}&"
+            + "SECURITY-APPNAME={applicationId}&"
+            + "GLOBAL-ID={globalId}&"
+            + "keywords={keywords}&"
+            + "paginationInput.entriesPerPage={maxresults}&"
+            + "itemFilter(0).name=TopRatedSellerOnly&itemFilter(0).value=true&"
+            + "itemFilter(1).name=ListingType&itemFilter(1).value=FixedPrice";
     public static final String SERVICE_VERSION = "1.0.0";
     public static final String OPERATION_NAME = "findItemsByKeywords";
     public static final String GLOBAL_ID = "EBAY-US";
@@ -46,6 +50,8 @@ public class EbaySearch {
     }
 
     private String createAddress(String tag) {
+        tag = tag.replace(" ", "+");
+
         //substitute token
         String address = EbaySearch.EBAY_FINDING_SERVICE_URI;
         address = address.replace("{version}", EbaySearch.SERVICE_VERSION);
