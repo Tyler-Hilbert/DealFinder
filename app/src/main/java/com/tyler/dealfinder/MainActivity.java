@@ -1,13 +1,21 @@
 package com.tyler.dealfinder;
 
+import android.app.Activity;
+import android.app.ProgressDialog;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -15,24 +23,25 @@ import java.io.InputStream;
 import java.util.ArrayList;
 
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends Activity {
+	private ListView listingsListView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
-        TextView listing = (TextView) findViewById(R.id.listing);
-        AsyncTaskRunner task = new AsyncTaskRunner();
-        try {
-            listing.setText(task.execute("").get().get(0).getName());
-        } catch (Exception e) {
-            e.printStackTrace();
-        };
+		listingsListView = (ListView) findViewById(R.id.listingsListView);
+		listingsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+				Toast.makeText(MainActivity.this, "Busta, you can't afford that!", Toast.LENGTH_SHORT).show();
+			}
+		});
 
-        new AsyncTaskRunner().execute("");
+		AsyncTaskRunner asyncTaskRunner = new AsyncTaskRunner();
+		asyncTaskRunner.execute();
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -56,20 +65,34 @@ public class MainActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-
-    private class AsyncTaskRunner extends AsyncTask<String, Void, ArrayList<EbayListing>> {
+    protected class AsyncTaskRunner extends AsyncTask<String, Void, ArrayList<EbayListing>> {
         private ArrayList<EbayListing> resp;
+		ProgressDialog progressDialog;
 
-        @Override
+		@Override
+		protected void onPreExecute() {
+			progressDialog = ProgressDialog.show(MainActivity.this, "Loading products", "Loading products", true);
+		}
+
+		@Override
         protected ArrayList<EbayListing> doInBackground(String... params) {
             EbaySearch search = new EbaySearch();
+
             try {
-                resp = search.run("Iphone 5g");
+                resp = search.run("iPhone");
             } catch(Exception e) {
                 e.printStackTrace();
             }
             return resp;
         }
-    }
+
+		@Override
+		protected void onPostExecute(ArrayList<EbayListing> ebayListings) {
+			ListingArrayAdapter adapter = new ListingArrayAdapter(MainActivity.this, resp);
+			listingsListView.setAdapter(adapter);
+			adapter.notifyDataSetChanged();
+			progressDialog.dismiss();
+		}
+	}
 }
 
