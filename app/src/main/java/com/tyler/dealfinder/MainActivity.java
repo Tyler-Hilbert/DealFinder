@@ -74,7 +74,7 @@ public class MainActivity extends Activity {
             EbaySearch search = new EbaySearch();
 
             try {
-                resp = search.run("iPhone");
+                resp = search.run("esp guitar");
             } catch(Exception e) {
                 e.printStackTrace();
             }
