@@ -2,8 +2,10 @@ package com.tyler.dealfinder;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -32,13 +34,6 @@ public class MainActivity extends Activity {
         setContentView(R.layout.main);
 
 		listingsListView = (ListView) findViewById(R.id.listingsListView);
-		listingsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-			@Override
-			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				Toast.makeText(MainActivity.this, "Busta, you can't afford that!", Toast.LENGTH_SHORT).show();
-			}
-		});
-
 		AsyncTaskRunner asyncTaskRunner = new AsyncTaskRunner();
 		asyncTaskRunner.execute();
     }
@@ -88,10 +83,19 @@ public class MainActivity extends Activity {
 
 		@Override
 		protected void onPostExecute(ArrayList<EbayListing> ebayListings) {
-			ListingArrayAdapter adapter = new ListingArrayAdapter(MainActivity.this, resp);
+			final ListingArrayAdapter adapter = new ListingArrayAdapter(MainActivity.this, resp);
 			listingsListView.setAdapter(adapter);
 			adapter.notifyDataSetChanged();
 			progressDialog.dismiss();
+
+			listingsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+				@Override
+				public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+					EbayListing listing = adapter.getItem(position);
+					Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(listing.getUrl()));
+					startActivity(browserIntent);
+				}
+			});
 		}
 	}
 }
