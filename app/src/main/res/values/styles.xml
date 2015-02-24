@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<color name="primaryColor">#388e3c</color>
-	<color name="primaryColorDark">#2e7d32</color>
+	<color name="primaryColor">#2196f3</color>
+	<color name="primaryColorDark">#1e88e5</color>
 	<color name="backgroundColor">#FFFFFF</color>
 
 	<style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
