@@ -26,6 +26,10 @@ public class ListingArrayAdapter extends ArrayAdapter<EbayListing> {
 		this.listingArrayList = listingArrayList;
 	}
 
+	public ArrayList<EbayListing> getValues() {
+		return this.listingArrayList;
+	}
+
 	@Override
 	public EbayListing getItem(int position) {
 		return listingArrayList.get(position);
@@ -44,13 +48,11 @@ public class ListingArrayAdapter extends ArrayAdapter<EbayListing> {
 
 		priceView.setText("$" + listingArrayList.get(position).getPrice());
 		nameView.setText(listingArrayList.get(position).getName());
+		image.setContentDescription(listingArrayList.get(position).getName());
         new DownloadImageTask(image).execute(listingArrayList.get(position).getPicUrl());
 
 		return rowView;
 	}
-
-
-
 
     private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
         ImageView bmImage;

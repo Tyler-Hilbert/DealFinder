@@ -3,11 +3,13 @@ package com.tyler.dealfinder;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.widget.ImageView;
 import android.widget.SearchView;
 import android.view.Menu;
@@ -21,12 +23,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.InputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 
 public class MainActivity extends Activity {
 	private ListView listingsListView;
 	private SearchView searchView;
-	private TextView statusView;
+	private ListingArrayAdapter listingAdapter;
 	private ResultsRetrievalTaskRunner resultsRetriever;
 	private String query;
 
@@ -37,10 +40,30 @@ public class MainActivity extends Activity {
         setContentView(R.layout.main);
 
 		listingsListView = (ListView) findViewById(R.id.listingsListView);
-		statusView = (TextView) findViewById(R.id.status_text);
+		listingsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+				EbayListing listing = listingAdapter.getItem(position);
+				Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(listing.getUrl()));
+				startActivity(browserIntent);
+			}
+		});
+
+		if (savedInstanceState != null) {
+			ArrayList<EbayListing> listingData =
+					(ArrayList<EbayListing>) savedInstanceState.getSerializable("listingData");
+
+			updateList(listingData);
+		}
     }
 
-    @Override
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		outState.putSerializable("listingData", listingAdapter.getValues());
+		super.onSaveInstanceState(outState);
+	}
+
+	@Override
     public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
 
@@ -84,9 +107,15 @@ public class MainActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
+	void updateList(ArrayList<EbayListing> listingData) {
+		listingAdapter = new ListingArrayAdapter(MainActivity.this, listingData);
+		listingsListView.setAdapter(listingAdapter);
+		listingAdapter.notifyDataSetChanged();
+	}
+
 	protected class ResultsRetrievalTaskRunner extends AsyncTask<String, Void, ArrayList<EbayListing>> {
-        private ArrayList<EbayListing> resp;
 		ProgressDialog progressDialog;
+		ArrayList<EbayListing> listingData = new ArrayList<>();
 
 		@Override
 		protected void onPreExecute() {
@@ -98,28 +127,18 @@ public class MainActivity extends Activity {
             EbaySearch search = new EbaySearch();
 
             try {
-                resp = search.run(query);
+                listingData = search.run(query);
             } catch(Exception e) {
                 e.printStackTrace();
             }
-            return resp;
+
+			return listingData;
         }
 
 		@Override
 		protected void onPostExecute(ArrayList<EbayListing> ebayListings) {
-			final ListingArrayAdapter adapter = new ListingArrayAdapter(MainActivity.this, resp);
-			listingsListView.setAdapter(adapter);
-			adapter.notifyDataSetChanged();
+			updateList(listingData);
 			progressDialog.dismiss();
-
-			listingsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    EbayListing listing = adapter.getItem(position);
-                    Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(listing.getUrl()));
-                    startActivity(browserIntent);
-                }
-            });
 		}
 	}
 }
