@@ -3,9 +3,12 @@ package com.tyler.dealfinder;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.widget.ImageView;
 import android.widget.SearchView;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -17,6 +20,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 
 public class MainActivity extends Activity {
@@ -109,13 +113,13 @@ public class MainActivity extends Activity {
 			progressDialog.dismiss();
 
 			listingsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-				@Override
-				public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-					EbayListing listing = adapter.getItem(position);
-					Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(listing.getUrl()));
-					startActivity(browserIntent);
-				}
-			});
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    EbayListing listing = adapter.getItem(position);
+                    Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(listing.getUrl()));
+                    startActivity(browserIntent);
+                }
+            });
 		}
 	}
 }
