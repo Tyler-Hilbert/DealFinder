@@ -59,7 +59,10 @@ public class MainActivity extends Activity {
 
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
-		outState.putSerializable("listingData", listingAdapter.getValues());
+		if (listingAdapter != null) {
+			outState.putSerializable("listingData", listingAdapter.getValues());
+		}
+
 		super.onSaveInstanceState(outState);
 	}
 

@@ -1,6 +1,8 @@
 package com.tyler.dealfinder;
 
-public class EbayListing {
+import java.io.Serializable;
+
+public class EbayListing implements Serializable {
 	private String name;
 	private double price;
 	private String url;
