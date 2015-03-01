@@ -22,6 +22,7 @@
                 android:id="@+id/picture"
                 android:layout_width="wrap_content"
                 android:layout_height="fill_parent"
+				android:minWidth="75dp"
 				android:src="#ff927893"
 				android:layout_centerVertical="true"/>
 
